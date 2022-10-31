@@ -107,13 +107,24 @@ class Dog
     #Bonus deliverables
     #.find_or_create_by
     def self.find_or_create_by(name:, breed:)
-        #check if the there is a dog with the name and breed passed
-        if self.find_by_name(name).breed == breed 
-            self.find_by_name(name)
-        else
-            self.create(name: name, breed: breed)
-        end
+      dog = DB[:conn].execute("SELECT * FROM dogs WHERE name = ? AND breed = ?", name, breed)
+      if !dog.empty?
+        dog_data = dog[0]
+        dog = Dog.new(id: dog_data[0], name: dog_data[1], breed: dog_data[2])
+      else
+        dog = self.create(name: name, breed: breed)
+      end
+      dog
     end
+
+    # def self.find_or_create_by(name:, breed:)
+    #     #check if the there is a dog with the name and breed passed
+    #     if self.find_by_name(name).breed == breed 
+    #         self.find_by_name(name)
+    #     else
+    #         self.create(name: name, breed: breed)
+    #     end
+    # end
 
     #update method to update name
     def update
