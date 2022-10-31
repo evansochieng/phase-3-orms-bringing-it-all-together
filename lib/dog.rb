@@ -103,4 +103,27 @@ class Dog
             self.new_from_db(row)
         end.first
     end
+
+    #Bonus deliverables
+    #.find_or_create_by
+    def self.find_or_create_by(name:, breed:)
+        #check if the there is a dog with the name and breed passed
+        if self.find_by_name(name).breed == breed 
+            self.find_by_name(name)
+        else
+            self.create(name: name, breed: breed)
+        end
+    end
+
+    #update method to update name
+    def update
+        #update statement
+        sql = <<-SQL
+         UPDATE dogs
+         SET name = ?
+        SQL
+
+        #execute query
+        DB[:conn].execute(sql, self.name) #set name of that row(instance) to the updated name
+    end
 end
