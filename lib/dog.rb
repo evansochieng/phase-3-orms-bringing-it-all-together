@@ -31,22 +31,22 @@ class Dog
         DB[:conn].execute(sql)
     end
 
-    #save - insert data into table
-    def save
-        #query to insert data as row
-        sql = <<-SQL
-          INSERT INTO dogs (name, breed)
-          VALUES (?, ?)
-        SQL
-        #execute
-        DB[:conn].execute(sql, self.name, self.breed)
+    # #save - insert data into table
+    # def save
+    #     #query to insert data as row
+    #     sql = <<-SQL
+    #       INSERT INTO dogs (name, breed)
+    #       VALUES (?, ?)
+    #     SQL
+    #     #execute
+    #     DB[:conn].execute(sql, self.name, self.breed)
 
-        #assign id attribute a value equal to the id value from the database
-        self.id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs;")[0][0]
+    #     #assign id attribute a value equal to the id value from the database
+    #     self.id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs;")[0][0]
 
-        #return the instance
-        self
-    end
+    #     #return the instance
+    #     self
+    # end
 
     #.create
     def self.create(name:, breed:)
@@ -125,5 +125,30 @@ class Dog
 
         #execute query
         DB[:conn].execute(sql, self.name) #set name of that row(instance) to the updated name
+    end
+
+    #Version 2 of save - Expand functionality
+    # Insert data to the table if id doesn't exist, otherwise update the record
+    def save
+        if self.id == nil
+            #query to insert data as row
+            sql = <<-SQL
+              INSERT INTO dogs (name, breed)
+              VALUES (?, ?)
+            SQL
+            #execute
+            DB[:conn].execute(sql, self.name, self.breed)
+
+            #assign id attribute a value equal to the id value from the database
+            self.id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs;")[0][0]
+
+            #return the instance
+            self
+        else
+            self.update
+
+            #return updated dog instance
+            self
+        end
     end
 end
